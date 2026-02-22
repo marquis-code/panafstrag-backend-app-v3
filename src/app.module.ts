@@ -14,6 +14,8 @@ import { ArchiveModule } from './archive/archive.module';
 import { MediaModule } from './media/media.module';
 import { AdminModule } from './admin/admin.module';
 import { ChatModule } from './chat/chat.module';
+import { ObjectiveModule } from './objective/objective.module';
+import { ResponsibilityModule } from './responsibility/responsibility.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
@@ -47,7 +49,9 @@ import { RolesGuard } from './auth/guards/roles.guard';
     ArchiveModule, 
     MediaModule, 
     AdminModule, 
-    ChatModule
+    ChatModule,
+    ObjectiveModule,
+    ResponsibilityModule
   ],
   controllers: [AppController],
   providers: [

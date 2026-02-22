@@ -8,14 +8,32 @@ export class Board {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  role: string;
+  @Prop()
+  email: string[];
+
+  @Prop()
+  avatar: string;
+
+  @Prop()
+  university: string;
+
+  @Prop()
+  department: string;
+
+  @Prop()
+  faculty: string;
+
+  @Prop()
+  position: string;
 
   @Prop()
   bio: string;
 
   @Prop()
-  imageUrl: string;
+  dateJoined: string;
+
+  @Prop()
+  cloudinary_id: string;
 
   @Prop([String])
   duties: string[];

@@ -9,7 +9,31 @@ export class Program {
   title: string;
 
   @Prop()
+  theme: string;
+
+  @Prop()
   description: string;
+
+  @Prop()
+  startDate: string;
+
+  @Prop()
+  endDate: string;
+
+  @Prop([String])
+  uploadedDocumentFiles: string[];
+
+  @Prop()
+  uploadedVideoUrl: string;
+
+  @Prop()
+  zoomMeetingUrl: string;
+
+  @Prop([String])
+  cloudinary_id: string;
+
+  @Prop({ default: 'pending' })
+  status: string;
 
   @Prop({ required: true, enum: ['upcoming', 'past'], default: 'upcoming' })
   type: string;
@@ -22,6 +46,9 @@ export class Program {
 
   @Prop()
   registerLink: string;
+
+  @Prop([Object])
+  nestedProgrammes: any[];
 }
 
 export const ProgramSchema = SchemaFactory.createForClass(Program);
