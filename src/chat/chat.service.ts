@@ -7,12 +7,21 @@ import { Message, MessageDocument } from './schemas/message.schema';
 export class ChatService {
   constructor(@InjectModel(Message.name) private messageModel: Model<MessageDocument>) {}
 
-  async saveMessage(data: { sender: string; content: string }): Promise<MessageDocument> {
+  async saveMessage(data: { 
+    sender?: string; 
+    guestName?: string; 
+    guestEmail?: string; 
+    content: string 
+  }): Promise<MessageDocument> {
     const createdMessage = new this.messageModel(data);
     return createdMessage.save();
   }
 
   async findAll(): Promise<MessageDocument[]> {
-    return this.messageModel.find().populate('sender', 'name email').sort({ createdAt: 1 }).exec();
+    return this.messageModel
+      .find()
+      .populate('sender', 'name email')
+      .sort({ createdAt: 1 })
+      .exec();
   }
 }

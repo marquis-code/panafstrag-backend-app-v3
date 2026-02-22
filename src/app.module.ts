@@ -19,6 +19,7 @@ import { ResponsibilityModule } from './responsibility/responsibility.module';
 import { LanguageGroupModule } from './language-group/language-group.module';
 import { FocusAreaModule } from './focus-area/focus-area.module';
 import { OrganogramModule } from './organogram/organogram.module';
+import { EnquiryModule } from './enquiry/enquiry.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
@@ -68,7 +69,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
     ResponsibilityModule,
     LanguageGroupModule,
     FocusAreaModule,
-    OrganogramModule
+    OrganogramModule,
+    EnquiryModule
   ],
   controllers: [AppController],
   providers: [
