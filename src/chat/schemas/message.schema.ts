@@ -20,8 +20,11 @@ export class Message {
   @Prop({ enum: ['text', 'image'], default: 'text' })
   type: string;
 
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User', required: false })
+  recipient?: string;
+
   @Prop({ required: false })
-  imageUrl?: string;
+  recipientEmail?: string;
 
   @Prop({ default: false })
   isRead: boolean;

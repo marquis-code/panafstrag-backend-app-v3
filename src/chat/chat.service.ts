@@ -14,9 +14,23 @@ export class ChatService {
     content: string;
     type?: string;
     imageUrl?: string;
+    recipient?: string;
+    recipientEmail?: string;
   }): Promise<MessageDocument> {
     const createdMessage = new this.messageModel(data);
     return createdMessage.save();
+  }
+
+  async findConversation(participantId?: string, participantEmail?: string): Promise<MessageDocument[]> {
+    const query = participantId 
+      ? { $or: [{ sender: participantId }, { recipient: participantId }] }
+      : { $or: [{ guestEmail: participantEmail }, { recipientEmail: participantEmail }] };
+      
+    return this.messageModel
+      .find(query)
+      .populate('sender', 'name email')
+      .sort({ createdAt: 1 })
+      .exec();
   }
 
   async findAll(): Promise<MessageDocument[]> {
