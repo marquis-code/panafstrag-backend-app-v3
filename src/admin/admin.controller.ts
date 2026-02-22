@@ -4,11 +4,12 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../auth/schemas/user.schema';
 import { AdminService } from './admin.service';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @ApiTags('admin')
 @ApiBearerAuth()
 @Controller('admin')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 @Roles(UserRole.ADMIN)
 export class AdminController {
   constructor(private readonly adminService: AdminService) {}

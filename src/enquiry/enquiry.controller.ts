@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
 import { EnquiryService } from './enquiry.service';
 import { CreateEnquiryDto } from './dto/create-enquiry.dto';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -27,7 +28,7 @@ export class EnquiryController {
   }
 
   @Get()
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all enquiries (Admin only)' })
@@ -36,7 +37,7 @@ export class EnquiryController {
   }
 
   @Get(':id')
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get a single enquiry (Admin only)' })
@@ -45,7 +46,7 @@ export class EnquiryController {
   }
 
   @Patch(':id/status')
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update enquiry status (Admin only)' })
@@ -54,7 +55,7 @@ export class EnquiryController {
   }
 
   @Delete(':id')
-  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete an enquiry (Admin only)' })
