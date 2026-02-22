@@ -11,7 +11,9 @@ export class ChatService {
     sender?: string; 
     guestName?: string; 
     guestEmail?: string; 
-    content: string 
+    content: string;
+    type?: string;
+    imageUrl?: string;
   }): Promise<MessageDocument> {
     const createdMessage = new this.messageModel(data);
     return createdMessage.save();

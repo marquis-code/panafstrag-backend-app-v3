@@ -31,11 +31,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('sendMessage')
   async handleMessage(
-    @MessageBody() data: { sender: string; content: string },
+    @MessageBody() data: { 
+      sender?: string; 
+      guestName?: string; 
+      guestEmail?: string; 
+      content: string;
+      type?: string;
+      imageUrl?: string;
+    },
   ) {
     const savedMessage = await this.chatService.saveMessage(data);
     this.server.emit('newMessage', savedMessage);
     return savedMessage;
+  }
+
+  @SubscribeMessage('typing')
+  handleTyping(@MessageBody() data: { name: string; isGuest: boolean }) {
+    this.server.emit('userTyping', data);
+  }
+
+  @SubscribeMessage('stopTyping')
+  handleStopTyping(@MessageBody() data: { name: string; isGuest: boolean }) {
+    this.server.emit('userStoppedTyping', data);
   }
 
   @SubscribeMessage('findAllMessages')

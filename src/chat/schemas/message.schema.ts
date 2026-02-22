@@ -17,6 +17,12 @@ export class Message {
   @Prop({ required: true })
   content: string;
 
+  @Prop({ enum: ['text', 'image'], default: 'text' })
+  type: string;
+
+  @Prop({ required: false })
+  imageUrl?: string;
+
   @Prop({ default: false })
   isRead: boolean;
 }
