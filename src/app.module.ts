@@ -16,6 +16,8 @@ import { AdminModule } from './admin/admin.module';
 import { ChatModule } from './chat/chat.module';
 import { ObjectiveModule } from './objective/objective.module';
 import { ResponsibilityModule } from './responsibility/responsibility.module';
+import { LanguageGroupModule } from './language-group/language-group.module';
+import { FocusAreaModule } from './focus-area/focus-area.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
@@ -51,7 +53,9 @@ import { RolesGuard } from './auth/guards/roles.guard';
     AdminModule, 
     ChatModule,
     ObjectiveModule,
-    ResponsibilityModule
+    ResponsibilityModule,
+    LanguageGroupModule,
+    FocusAreaModule
   ],
   controllers: [AppController],
   providers: [
