@@ -27,15 +27,26 @@ import { RolesGuard } from './auth/guards/roles.guard';
     CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        store: await redisStore({
-          socket: {
-            host: configService.get<string>('REDIS_HOST') || 'localhost',
-            port: parseInt(configService.get<string>('REDIS_PORT') || '6379'),
-          },
-          ttl: parseInt(configService.get<string>('CACHE_TTL') || '3600'),
-        }),
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const redisHost = configService.get<string>('REDIS_HOST');
+        if (!redisHost) {
+          return {
+            ttl: 3600,
+          };
+        }
+        return {
+          store: await redisStore({
+            socket: {
+              host: redisHost,
+              port: parseInt(configService.get<string>('REDIS_PORT') || '6379'),
+              connectTimeout: 5000,
+              reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
+            },
+            password: configService.get<string>('REDIS_PASSWORD'),
+            ttl: parseInt(configService.get<string>('CACHE_TTL') || '3600'),
+          }),
+        };
+      },
       inject: [ConfigService],
     }),
     MongooseModule.forRootAsync({

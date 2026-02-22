@@ -21,9 +21,13 @@ export class AdminService {
   ) {}
 
   async getStats() {
-    const cachedStats = await this.cacheManager.get(this.CACHE_KEY);
-    if (cachedStats) {
-      return cachedStats;
+    try {
+      const cachedStats = await this.cacheManager.get(this.CACHE_KEY);
+      if (cachedStats) {
+        return cachedStats;
+      }
+    } catch (error) {
+      console.warn('Cache get failed:', error.message);
     }
 
     const [boardCount, cellCount, programCount, archiveCount] = await Promise.all([
@@ -40,7 +44,12 @@ export class AdminService {
       archiveCount,
     };
 
-    await this.cacheManager.set(this.CACHE_KEY, stats, 60000); // Cache stats for 1 minute
+    try {
+      await this.cacheManager.set(this.CACHE_KEY, stats, 60000); // Cache stats for 1 minute
+    } catch (error) {
+      console.warn('Cache set failed:', error.message);
+    }
+    
     return stats;
   }
 }
