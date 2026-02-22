@@ -18,6 +18,7 @@ import { ObjectiveModule } from './objective/objective.module';
 import { ResponsibilityModule } from './responsibility/responsibility.module';
 import { LanguageGroupModule } from './language-group/language-group.module';
 import { FocusAreaModule } from './focus-area/focus-area.module';
+import { OrganogramModule } from './organogram/organogram.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
@@ -55,7 +56,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
     ObjectiveModule,
     ResponsibilityModule,
     LanguageGroupModule,
-    FocusAreaModule
+    FocusAreaModule,
+    OrganogramModule
   ],
   controllers: [AppController],
   providers: [
