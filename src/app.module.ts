@@ -20,6 +20,7 @@ import { LanguageGroupModule } from './language-group/language-group.module';
 import { FocusAreaModule } from './focus-area/focus-area.module';
 import { OrganogramModule } from './organogram/organogram.module';
 import { EnquiryModule } from './enquiry/enquiry.module';
+import { HomeContentModule } from './home-content/home-content.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
@@ -36,20 +37,38 @@ import { RolesGuard } from './auth/guards/roles.guard';
         }
         try {
           console.log(`[Cache] 🔌 Attempting to connect to Redis at ${redisHost}...`);
+          
+          // Use a shorter timeout and more controlled reconnection for initialization
           const store = await redisStore({
             socket: {
               host: redisHost,
               port: parseInt(configService.get<string>('REDIS_PORT') || '6379'),
-              connectTimeout: 2000,
-              reconnectStrategy: (retries) => (retries > 3 ? new Error('Redis connection failed') : Math.min(retries * 100, 1000)),
+              connectTimeout: 5000,
+              reconnectStrategy: (retries) => {
+                if (retries > 2) {
+                  // Returning false stops the reconnection attempts
+                  return false;
+                }
+                return Math.min(retries * 100, 1000);
+              },
             },
             password: configService.get<string>('REDIS_PASSWORD'),
             ttl: parseInt(configService.get<string>('CACHE_TTL') || '3600'),
           });
-          console.log('[Cache] ✅ Redis store initialized successfully.');
+
+          // Verify connectivity before returning the store
+          // If it fails here, it will be caught by the try-catch
+          await store.client.connect();
+          
+          // Add an error listener to prevent unhandled error events from crashing the process
+          store.client.on('error', (err) => {
+            console.error('[Cache] ⚠️ Redis client error:', err.message);
+          });
+
+          console.log('[Cache] ✅ Redis store connected successfully.');
           return { store };
         } catch (error) {
-          console.error('[Cache] ❌ Redis connection failed. Falling back to in-memory store:', error.message);
+          console.error('[Cache] ❌ Redis connection failed. Falling back to in-memory store.');
           return { ttl: 3600 };
         }
       },
@@ -75,7 +94,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
     LanguageGroupModule,
     FocusAreaModule,
     OrganogramModule,
-    EnquiryModule
+    EnquiryModule,
+    HomeContentModule
   ],
   controllers: [AppController],
   providers: [
