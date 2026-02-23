@@ -23,13 +23,23 @@ export class ArchiveService {
     return saved;
   }
 
-  async findAll(): Promise<ArchiveDocument[]> {
-    const cachedData = await this.cacheManager.get<ArchiveDocument[]>(this.CACHE_KEY);
+  async findAll(filters?: { type?: string; year?: number; month?: number }): Promise<ArchiveDocument[]> {
+    const cacheKey = filters 
+      ? `${this.CACHE_KEY}_${filters.type || 'all'}_${filters.year || 'all'}_${filters.month || 'all'}`
+      : this.CACHE_KEY;
+
+    const cachedData = await this.cacheManager.get<ArchiveDocument[]>(cacheKey);
     if (cachedData) {
       return cachedData;
     }
-    const data = await this.archiveModel.find().exec();
-    await this.cacheManager.set(this.CACHE_KEY, data);
+
+    const query: any = {};
+    if (filters?.type && filters.type !== 'all') query.type = filters.type;
+    if (filters?.year) query.year = filters.year;
+    if (filters?.month) query.month = filters.month;
+
+    const data = await this.archiveModel.find(query).sort({ date: -1, createdAt: -1 }).exec();
+    await this.cacheManager.set(cacheKey, data);
     return data;
   }
 

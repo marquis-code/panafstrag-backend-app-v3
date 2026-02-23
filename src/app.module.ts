@@ -31,22 +31,27 @@ import { RolesGuard } from './auth/guards/roles.guard';
       useFactory: async (configService: ConfigService) => {
         const redisHost = configService.get<string>('REDIS_HOST');
         if (!redisHost) {
-          return {
-            ttl: 3600,
-          };
+          console.log('[Cache] ℹ️ No REDIS_HOST provided. Using in-memory store.');
+          return { ttl: 3600 };
         }
-        return {
-          store: await redisStore({
+        try {
+          console.log(`[Cache] 🔌 Attempting to connect to Redis at ${redisHost}...`);
+          const store = await redisStore({
             socket: {
               host: redisHost,
               port: parseInt(configService.get<string>('REDIS_PORT') || '6379'),
-              connectTimeout: 5000,
-              reconnectStrategy: (retries) => Math.min(retries * 50, 2000),
+              connectTimeout: 2000,
+              reconnectStrategy: (retries) => (retries > 3 ? new Error('Redis connection failed') : Math.min(retries * 100, 1000)),
             },
             password: configService.get<string>('REDIS_PASSWORD'),
             ttl: parseInt(configService.get<string>('CACHE_TTL') || '3600'),
-          }),
-        };
+          });
+          console.log('[Cache] ✅ Redis store initialized successfully.');
+          return { store };
+        } catch (error) {
+          console.error('[Cache] ❌ Redis connection failed. Falling back to in-memory store:', error.message);
+          return { ttl: 3600 };
+        }
       },
       inject: [ConfigService],
     }),

@@ -7,6 +7,9 @@ import { Board, BoardDocument } from '../board/schemas/board.schema';
 import { Cell, CellDocument } from '../cell/schemas/cell.schema';
 import { Program, ProgramDocument } from '../program/schemas/program.schema';
 import { Archive, ArchiveDocument } from '../archive/schemas/archive.schema';
+import { Enquiry, EnquiryDocument } from '../enquiry/schemas/enquiry.schema';
+import { Objective, ObjectiveDocument } from '../objective/schemas/objective.schema';
+import { OrganogramNode, OrganogramNodeDocument } from '../organogram/schemas/organogram.schema';
 
 @Injectable()
 export class AdminService {
@@ -17,6 +20,9 @@ export class AdminService {
     @InjectModel(Cell.name) private cellModel: Model<CellDocument>,
     @InjectModel(Program.name) private programModel: Model<ProgramDocument>,
     @InjectModel(Archive.name) private archiveModel: Model<ArchiveDocument>,
+    @InjectModel(Enquiry.name) private enquiryModel: Model<EnquiryDocument>,
+    @InjectModel(Objective.name) private objectiveModel: Model<ObjectiveDocument>,
+    @InjectModel(OrganogramNode.name) private organogramModel: Model<OrganogramNodeDocument>,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -30,11 +36,22 @@ export class AdminService {
       console.warn('Cache get failed:', error.message);
     }
 
-    const [boardCount, cellCount, programCount, archiveCount] = await Promise.all([
-      this.boardModel.countDocuments().exec(),
-      this.cellModel.countDocuments().exec(),
-      this.programModel.countDocuments().exec(),
-      this.archiveModel.countDocuments().exec(),
+    const [
+      boardCount,
+      cellCount,
+      programCount,
+      archiveCount,
+      enquiryCount,
+      objectiveCount,
+      organogramCount,
+    ] = await Promise.all([
+      this.boardModel.countDocuments().exec().catch(() => 0),
+      this.cellModel.countDocuments().exec().catch(() => 0),
+      this.programModel.countDocuments().exec().catch(() => 0),
+      this.archiveModel.countDocuments().exec().catch(() => 0),
+      this.enquiryModel.countDocuments().exec().catch(() => 0),
+      this.objectiveModel.countDocuments().exec().catch(() => 0),
+      this.organogramModel.countDocuments().exec().catch(() => 0),
     ]);
 
     const stats = {
@@ -42,6 +59,9 @@ export class AdminService {
       cellCount,
       programCount,
       archiveCount,
+      enquiryCount,
+      objectiveCount,
+      organogramCount,
     };
 
     try {

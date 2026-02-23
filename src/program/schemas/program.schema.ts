@@ -47,6 +47,12 @@ export class Program {
   @Prop()
   registerLink: string;
 
+  @Prop({ required: false })
+  year?: number;
+
+  @Prop({ required: false })
+  month?: number;
+
   @Prop([Object])
   nestedProgrammes: any[];
 }

@@ -4,7 +4,7 @@ export class CreateArchiveDto {
   @ApiProperty()
   title: string;
 
-  @ApiProperty({ enum: ['speech', 'report', 'media'] })
+  @ApiProperty({ enum: ['speech', 'report', 'media', 'publication'] })
   type: string;
 
   @ApiProperty({ required: false })

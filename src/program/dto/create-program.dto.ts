@@ -45,4 +45,10 @@ export class CreateProgramDto {
 
   @ApiProperty({ type: [Object], required: false })
   nestedProgrammes?: any[];
+
+  @ApiProperty({ required: false })
+  year?: number;
+
+  @ApiProperty({ required: false })
+  month?: number;
 }

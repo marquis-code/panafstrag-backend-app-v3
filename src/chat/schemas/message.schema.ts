@@ -26,6 +26,15 @@ export class Message {
   @Prop({ required: false })
   recipientEmail?: string;
 
+  @Prop({ required: false, index: true })
+  conversationId: string;
+
+  @Prop({ default: false })
+  isAdmin: boolean;
+
+  @Prop({ default: false })
+  isBot: boolean;
+
   @Prop({ default: false })
   isRead: boolean;
 }

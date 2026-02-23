@@ -8,7 +8,7 @@ export class Archive {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ required: true, enum: ['speech', 'report', 'media'] })
+  @Prop({ required: true, enum: ['speech', 'report', 'media', 'publication'] })
   type: string;
 
   @Prop()
@@ -17,10 +17,10 @@ export class Archive {
   @Prop()
   date: Date;
 
-  @Prop()
+  @Prop({ index: true })
   year: number;
 
-  @Prop()
+  @Prop({ index: true })
   month: number;
 
   @Prop()

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ProgramService } from './program.service';
 import { CreateProgramDto } from './dto/create-program.dto';
@@ -17,8 +17,12 @@ export class ProgramController {
 
   @Get()
   @ApiOperation({ summary: 'Get all programs' })
-  findAll() {
-    return this.programService.findAll();
+  findAll(
+    @Query('type') type?: string,
+    @Query('year') year?: number,
+    @Query('month') month?: number,
+  ) {
+    return this.programService.findAll({ type, year, month });
   }
 
   @Get(':id')

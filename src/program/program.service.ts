@@ -23,13 +23,20 @@ export class ProgramService {
     return saved;
   }
 
-  async findAll(): Promise<ProgramDocument[]> {
-    const cachedPrograms = await this.cacheManager.get<ProgramDocument[]>(this.CACHE_KEY);
+  async findAll(query?: { type?: string; year?: number; month?: number }): Promise<ProgramDocument[]> {
+    const cacheKey = `${this.CACHE_KEY}_${JSON.stringify(query || {})}`;
+    const cachedPrograms = await this.cacheManager.get<ProgramDocument[]>(cacheKey);
     if (cachedPrograms) {
       return cachedPrograms;
     }
-    const programs = await this.programModel.find().exec();
-    await this.cacheManager.set(this.CACHE_KEY, programs);
+
+    const filter: any = {};
+    if (query?.type && query.type !== 'all') filter.type = query.type;
+    if (query?.year) filter.year = Number(query.year);
+    if (query?.month) filter.month = Number(query.month);
+
+    const programs = await this.programModel.find(filter).sort({ date: -1 }).exec();
+    await this.cacheManager.set(cacheKey, programs);
     return programs;
   }
 

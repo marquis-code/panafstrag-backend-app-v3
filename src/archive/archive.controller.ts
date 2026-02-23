@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { ArchiveService } from './archive.service';
 import { CreateArchiveDto } from './dto/create-archive.dto';
@@ -16,9 +16,13 @@ export class ArchiveController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all archive entries' })
-  findAll() {
-    return this.archiveService.findAll();
+  @ApiOperation({ summary: 'Get all archive entries with optional filtering' })
+  findAll(
+    @Query('type') type?: string,
+    @Query('year') year?: number,
+    @Query('month') month?: number,
+  ) {
+    return this.archiveService.findAll({ type, year, month });
   }
 
   @Get(':id')
