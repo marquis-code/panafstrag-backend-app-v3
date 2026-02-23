@@ -21,6 +21,7 @@ import { FocusAreaModule } from './focus-area/focus-area.module';
 import { OrganogramModule } from './organogram/organogram.module';
 import { EnquiryModule } from './enquiry/enquiry.module';
 import { HomeContentModule } from './home-content/home-content.module';
+import { SearchModule } from './search/search.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
@@ -95,7 +96,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
     FocusAreaModule,
     OrganogramModule,
     EnquiryModule,
-    HomeContentModule
+    HomeContentModule,
+    SearchModule
   ],
   controllers: [AppController],
   providers: [
