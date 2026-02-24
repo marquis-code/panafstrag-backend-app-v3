@@ -27,6 +27,105 @@ export class HomeContent {
 
   @Prop({ required: true })
   aboutUsTitle: string;
+
+  @Prop({ required: false })
+  aboutUsContextImage?: string;
+
+  @Prop({ required: false })
+  aboutUsContextText?: string;
+
+  @Prop({ required: false })
+  languageGroupFunction?: string;
+
+  @Prop({ required: false })
+  languageGroupMembership?: string;
+
+  @Prop({ required: false })
+  languageGroupLeadership?: string;
+
+  @Prop({ required: false })
+  languageGroupFees?: string;
+
+  @Prop({ required: false })
+  websiteHeaderText?: string;
+
+  @Prop({ required: false })
+  aboutUsSubTitle?: string;
+
+  @Prop({ required: false })
+  objectivesTitle?: string;
+
+  @Prop({ required: false })
+  objectivesSubTitle?: string;
+
+  @Prop({ required: false })
+  responsibilitiesTitle?: string;
+
+  @Prop({ required: false })
+  responsibilitiesSubTitle?: string;
+
+  @Prop({ required: false })
+  programsTitle?: string;
+
+  @Prop({ required: false })
+  ctaTitle?: string;
+
+  @Prop({ required: false })
+  ctaDescription?: string;
+
+  @Prop({ required: false })
+  featuresTitle?: string;
+
+  @Prop({ required: false })
+  featuresSubTitle?: string;
+
+  @Prop({ required: false })
+  focusAreasPageTitle?: string;
+
+  @Prop({ required: false })
+  focusAreasPageDescription?: string;
+
+  @Prop({ required: false })
+  programsPageTitle?: string;
+
+  @Prop({ required: false })
+  programsPageDescription?: string;
+
+  @Prop({ required: false })
+  archivesPageTitle?: string;
+
+  @Prop({ required: false })
+  archivesPageDescription?: string;
+
+  @Prop({ required: false })
+  boardPageTitle?: string;
+
+  @Prop({ required: false })
+  boardPageDescription?: string;
+
+  @Prop({ required: false })
+  organogramPageTitle?: string;
+
+  @Prop({ required: false })
+  organogramPageDescription?: string;
+
+  @Prop({ required: false })
+  cellsPageTitle?: string;
+
+  @Prop({ required: false })
+  cellsPageDescription?: string;
+
+  @Prop({ required: false })
+  contactPageTitle?: string;
+
+  @Prop({ required: false })
+  contactPageDescription?: string;
+
+  @Prop({ required: false })
+  languageGroupsPageTitle?: string;
+
+  @Prop({ required: false })
+  languageGroupsPageDescription?: string;
 }
 
 export const HomeContentSchema = SchemaFactory.createForClass(HomeContent);
