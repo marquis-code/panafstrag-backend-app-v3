@@ -74,6 +74,21 @@ export class HomeContent {
   ctaDescription?: string;
 
   @Prop({ required: false })
+  programsSubTitle?: string;
+
+  @Prop({ required: false })
+  languageGroupFunctionTitle?: string;
+
+  @Prop({ required: false })
+  languageGroupMembershipTitle?: string;
+
+  @Prop({ required: false })
+  languageGroupLeadershipTitle?: string;
+
+  @Prop({ required: false })
+  languageGroupFeesTitle?: string;
+
+  @Prop({ required: false })
   featuresTitle?: string;
 
   @Prop({ required: false })

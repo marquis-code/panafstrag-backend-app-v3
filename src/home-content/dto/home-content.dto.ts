@@ -109,6 +109,31 @@ export class CreateHomeContentDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  programsSubTitle?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  languageGroupFunctionTitle?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  languageGroupMembershipTitle?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  languageGroupLeadershipTitle?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  languageGroupFeesTitle?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   featuresTitle?: string;
 
   @ApiPropertyOptional()
