@@ -19,6 +19,9 @@ export class Cell {
 
   @Prop()
   imageUrl: string;
+
+  @Prop({ default: 0 })
+  order: number;
 }
 
 export const CellSchema = SchemaFactory.createForClass(Cell);

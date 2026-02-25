@@ -28,7 +28,7 @@ export class CellService {
     if (cachedData) {
       return cachedData;
     }
-    const data = await this.cellModel.find().exec();
+    const data = await this.cellModel.find().sort({ order: 1, createdAt: 1 }).exec();
     await this.cacheManager.set(this.CACHE_KEY, data);
     return data;
   }

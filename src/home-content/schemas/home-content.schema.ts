@@ -26,6 +26,17 @@ class NavItem {
   path: string;
 }
 
+@Schema({ _id: false })
+class SocialLink {
+  @Prop({ required: true })
+  platform: string;
+
+  @Prop({ required: true })
+  url: string;
+}
+
+const SocialLinkSchema = SchemaFactory.createForClass(SocialLink);
+
 const NavItemSchema = SchemaFactory.createForClass(NavItem);
 
 @Schema({ timestamps: true })
@@ -152,6 +163,27 @@ export class HomeContent {
 
   @Prop({ required: false })
   languageGroupsPageDescription?: string;
+
+  @Prop({ required: false })
+  contactEmail?: string;
+
+  @Prop({ required: false })
+  contactPhone?: string;
+
+  @Prop({ required: false })
+  contactAddress?: string;
+
+  @Prop({ required: false })
+  contactOfficeHoursMonFri?: string;
+
+  @Prop({ required: false })
+  contactOfficeHoursSat?: string;
+
+  @Prop({ required: false })
+  contactOfficeHoursSun?: string;
+
+  @Prop({ type: [SocialLinkSchema], default: [] })
+  contactSocialLinks: SocialLink[];
 
   @Prop({ type: [NavItemSchema], default: [] })
   primaryNavItems: NavItem[];

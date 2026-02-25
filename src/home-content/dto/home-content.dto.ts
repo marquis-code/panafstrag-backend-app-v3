@@ -16,6 +16,16 @@ class CarouselItemDto {
   imgUrl: string;
 }
 
+class SocialLinkDto {
+  @ApiProperty()
+  @IsString()
+  platform: string;
+
+  @ApiProperty()
+  @IsString()
+  url: string;
+}
+
 class NavItemDto {
   @ApiProperty()
   @IsString()
@@ -230,6 +240,43 @@ export class CreateHomeContentDto {
   @IsOptional()
   @IsString()
   languageGroupsPageDescription?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  contactEmail?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  contactPhone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  contactAddress?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  contactOfficeHoursMonFri?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  contactOfficeHoursSat?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  contactOfficeHoursSun?: string;
+
+  @ApiPropertyOptional({ type: [SocialLinkDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => SocialLinkDto)
+  contactSocialLinks?: SocialLinkDto[];
 
   @ApiPropertyOptional({ type: [NavItemDto] })
   @IsOptional()
