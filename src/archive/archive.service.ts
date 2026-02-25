@@ -19,7 +19,7 @@ export class ArchiveService {
   async create(createArchiveDto: CreateArchiveDto): Promise<ArchiveDocument> {
     const createdArchive = new this.archiveModel(createArchiveDto);
     const saved = await createdArchive.save();
-    await this.cacheManager.del(this.CACHE_KEY);
+    await this.cacheManager.clear();
     return saved;
   }
 
@@ -58,7 +58,7 @@ export class ArchiveService {
     if (!updatedArchive) {
       throw new NotFoundException(`Archive entry with ID ${id} not found`);
     }
-    await this.cacheManager.del(this.CACHE_KEY);
+    await this.cacheManager.clear();
     return updatedArchive;
   }
 
@@ -67,7 +67,7 @@ export class ArchiveService {
     if (!deletedArchive) {
       throw new NotFoundException(`Archive entry with ID ${id} not found`);
     }
-    await this.cacheManager.del(this.CACHE_KEY);
+    await this.cacheManager.clear();
     return deletedArchive;
   }
 }

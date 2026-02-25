@@ -20,7 +20,7 @@ async function run() {
     const carouselsData = [
       {
         title: "PANAFSTRAG Mission Statement",
-        description: "Pan-Africana Strategic & Policy Research Group (PANAFSTRAG) is a group of willing Africana People coming together voluntarily to deliver original thinking through in-depth study, research, and analyses that benefit Africana people worldwide.",
+        description: "Panafricana Stratetegic & Policy Research Group (PANAFSTRAG) is a group of willing Africana People coming together voluntarily to deliver original thinking through in-depth study, research, and analyses that benefit Africana people worldwide.",
         imgUrl: "/images/mission_statement_1771885779898.png",
       },
       {

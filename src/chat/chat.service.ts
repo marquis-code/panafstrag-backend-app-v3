@@ -128,7 +128,7 @@ export class ChatService {
       {
         key: 'faq_about',
         type: 'faq',
-        message: 'PANAFSTRAG is the Pan-African Strategic Group dedicated to institutional collaboration, research publications, and strategic growth across Africa.',
+        message: 'PANAFSTRAG is the Panafricana Stratetegic Group dedicated to institutional collaboration, research publications, and strategic growth across Africa.',
         keywords: ['about', 'panafstrag', 'what is', 'who are', 'tell me'],
         priority: 30,
         isActive: true,

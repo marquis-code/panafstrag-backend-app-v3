@@ -11,9 +11,19 @@ class CarouselItemDto {
   @IsString()
   description: string;
 
-  @ApiProperty()
+@ApiProperty()
   @IsString()
   imgUrl: string;
+}
+
+class NavItemDto {
+  @ApiProperty()
+  @IsString()
+  label: string;
+
+  @ApiProperty()
+  @IsString()
+  path: string;
 }
 
 export class CreateHomeContentDto {
@@ -220,6 +230,20 @@ export class CreateHomeContentDto {
   @IsOptional()
   @IsString()
   languageGroupsPageDescription?: string;
+
+  @ApiPropertyOptional({ type: [NavItemDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NavItemDto)
+  primaryNavItems?: NavItemDto[];
+
+  @ApiPropertyOptional({ type: [NavItemDto] })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NavItemDto)
+  instituteNavItems?: NavItemDto[];
 }
 
 export class UpdateHomeContentDto extends CreateHomeContentDto {}

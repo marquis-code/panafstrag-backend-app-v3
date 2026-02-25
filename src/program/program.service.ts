@@ -19,7 +19,7 @@ export class ProgramService {
   async create(createProgramDto: CreateProgramDto): Promise<ProgramDocument> {
     const createdProgram = new this.programModel(createProgramDto);
     const saved = await createdProgram.save();
-    await this.cacheManager.del(this.CACHE_KEY);
+    await this.cacheManager.clear();
     return saved;
   }
 
@@ -55,7 +55,7 @@ export class ProgramService {
     if (!updatedProgram) {
       throw new NotFoundException(`Program with ID ${id} not found`);
     }
-    await this.cacheManager.del(this.CACHE_KEY);
+    await this.cacheManager.clear();
     return updatedProgram;
   }
 
@@ -64,7 +64,7 @@ export class ProgramService {
     if (!deletedProgram) {
       throw new NotFoundException(`Program with ID ${id} not found`);
     }
-    await this.cacheManager.del(this.CACHE_KEY);
+    await this.cacheManager.clear();
     return deletedProgram;
   }
 }

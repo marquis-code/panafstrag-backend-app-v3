@@ -18,7 +18,7 @@ export class HomeContentService {
           {
             title: "PANAFSTRAG Mission Statement",
             description:
-              "Pan-Africana Strategic and Policy Research Group (PANAFSTRAG) is a group of willing Africana People coming together voluntarily to deliver original thinking through in-depth study, research, and analyses that benefit Africana people worldwide.",
+              "Panafricana Stratetegic & Policy Research Group (PANAFSTRAG) is a group of willing Africana People coming together voluntarily to deliver original thinking through in-depth study, research, and analyses that benefit Africana people worldwide.",
             imgUrl: "hero.jpeg",
           },
           {
@@ -53,7 +53,7 @@ export class HomeContentService {
           },
         ],
         aboutUsTitle: 'About PANAFSTRAG',
-        aboutUsDescription: 'Pan-Africana Strategic and Policy Research Group was founded in 1992...'
+        aboutUsDescription: 'Panafricana Stratetegic & Policy Research Group was founded in 1992...'
       };
       return await new this.homeContentModel(seedData).save();
     }

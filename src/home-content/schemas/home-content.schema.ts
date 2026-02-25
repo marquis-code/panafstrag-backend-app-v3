@@ -17,6 +17,17 @@ class CarouselItem {
 
 const CarouselItemSchema = SchemaFactory.createForClass(CarouselItem);
 
+@Schema({ _id: false })
+class NavItem {
+  @Prop({ required: true })
+  label: string;
+
+  @Prop({ required: true })
+  path: string;
+}
+
+const NavItemSchema = SchemaFactory.createForClass(NavItem);
+
 @Schema({ timestamps: true })
 export class HomeContent {
   @Prop({ type: [CarouselItemSchema], default: [] })
@@ -141,6 +152,12 @@ export class HomeContent {
 
   @Prop({ required: false })
   languageGroupsPageDescription?: string;
+
+  @Prop({ type: [NavItemSchema], default: [] })
+  primaryNavItems: NavItem[];
+
+  @Prop({ type: [NavItemSchema], default: [] })
+  instituteNavItems: NavItem[];
 }
 
 export const HomeContentSchema = SchemaFactory.createForClass(HomeContent);
