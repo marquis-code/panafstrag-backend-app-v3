@@ -1,15 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { PartialType } from '@nestjs/swagger';
+import { CreateActiveBannerDto } from './create-active-banner.dto';
 
-export class UpdateActiveBannerDto {
-  @ApiProperty({ required: false })
-  programId?: string;
-
-  @ApiProperty({ required: false })
-  startDate?: Date;
-
-  @ApiProperty({ required: false })
-  endDate?: Date;
-
-  @ApiProperty({ required: false })
-  isActive?: boolean;
-}
+export class UpdateActiveBannerDto extends PartialType(CreateActiveBannerDto) {}
