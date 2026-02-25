@@ -241,15 +241,17 @@ export class CreateHomeContentDto {
   @IsString()
   languageGroupsPageDescription?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: [String] })
   @IsOptional()
-  @IsString()
-  contactEmail?: string;
+  @IsArray()
+  @IsString({ each: true })
+  contactEmail?: string[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: [String] })
   @IsOptional()
-  @IsString()
-  contactPhone?: string;
+  @IsArray()
+  @IsString({ each: true })
+  contactPhone?: string[];
 
   @ApiPropertyOptional()
   @IsOptional()

@@ -164,11 +164,11 @@ export class HomeContent {
   @Prop({ required: false })
   languageGroupsPageDescription?: string;
 
-  @Prop({ required: false })
-  contactEmail?: string;
+  @Prop({ type: [String], default: [] })
+  contactEmail?: string[];
 
-  @Prop({ required: false })
-  contactPhone?: string;
+  @Prop({ type: [String], default: [] })
+  contactPhone?: string[];
 
   @Prop({ required: false })
   contactAddress?: string;
