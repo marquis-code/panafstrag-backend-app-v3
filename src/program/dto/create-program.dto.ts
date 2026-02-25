@@ -10,6 +10,9 @@ export class CreateProgramDto {
   @ApiProperty({ required: false })
   description?: string;
 
+  @ApiProperty({ required: false, description: 'Rich HTML content from editor' })
+  content?: string;
+
   @ApiProperty({ required: false })
   startDate?: string;
 
@@ -24,6 +27,12 @@ export class CreateProgramDto {
 
   @ApiProperty({ required: false })
   zoomMeetingUrl?: string;
+
+  @ApiProperty({ required: false })
+  googleMeetUrl?: string;
+
+  @ApiProperty({ required: false })
+  location?: string;
 
   @ApiProperty({ type: [String], required: false })
   cloudinary_id?: string[];
@@ -51,4 +60,21 @@ export class CreateProgramDto {
 
   @ApiProperty({ required: false })
   month?: number;
+
+  @ApiProperty({ type: [String], required: false })
+  bannerImages?: string[];
+
+  @ApiProperty({
+    type: [Object],
+    required: false,
+    description: 'Array of speakers: { name, role, bio, imageUrl }',
+  })
+  speakers?: { name: string; role: string; bio: string; imageUrl: string }[];
+
+  @ApiProperty({
+    type: [Object],
+    required: false,
+    description: 'Array of agenda items: { time, title, description }',
+  })
+  agenda?: { time: string; title: string; description: string }[];
 }

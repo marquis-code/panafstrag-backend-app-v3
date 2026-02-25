@@ -15,6 +15,9 @@ export class Program {
   description: string;
 
   @Prop()
+  content: string;
+
+  @Prop()
   startDate: string;
 
   @Prop()
@@ -28,6 +31,12 @@ export class Program {
 
   @Prop()
   zoomMeetingUrl: string;
+
+  @Prop()
+  googleMeetUrl: string;
+
+  @Prop()
+  location: string;
 
   @Prop([String])
   cloudinary_id: string;
@@ -55,6 +64,30 @@ export class Program {
 
   @Prop([Object])
   nestedProgrammes: any[];
+
+  @Prop({ type: [String], default: [] })
+  bannerImages: string[];
+
+  @Prop({
+    type: [{
+      name: { type: String },
+      role: { type: String },
+      bio: { type: String },
+      imageUrl: { type: String },
+    }],
+    default: [],
+  })
+  speakers: { name: string; role: string; bio: string; imageUrl: string }[];
+
+  @Prop({
+    type: [{
+      time: { type: String },
+      title: { type: String },
+      description: { type: String },
+    }],
+    default: [],
+  })
+  agenda: { time: string; title: string; description: string }[];
 }
 
 export const ProgramSchema = SchemaFactory.createForClass(Program);

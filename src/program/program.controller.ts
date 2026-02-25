@@ -15,6 +15,24 @@ export class ProgramController {
     return this.programService.create(createProgramDto);
   }
 
+  @Get('upcoming')
+  @ApiOperation({ summary: 'Get upcoming programs' })
+  findUpcoming(
+    @Query('year') year?: number,
+    @Query('month') month?: number,
+  ) {
+    return this.programService.findAll({ type: 'upcoming', year, month });
+  }
+
+  @Get('past')
+  @ApiOperation({ summary: 'Get past programs (for archives)' })
+  findPast(
+    @Query('year') year?: number,
+    @Query('month') month?: number,
+  ) {
+    return this.programService.findAll({ type: 'past', year, month });
+  }
+
   @Get()
   @ApiOperation({ summary: 'Get all programs' })
   findAll(

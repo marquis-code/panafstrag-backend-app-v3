@@ -1,14 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateProgramDto {
-  @ApiProperty()
-  title: string;
+  @ApiProperty({ required: false })
+  title?: string;
 
   @ApiProperty({ required: false })
   theme?: string;
 
   @ApiProperty({ required: false })
   description?: string;
+
+  @ApiProperty({ required: false })
+  content?: string;
 
   @ApiProperty({ required: false })
   startDate?: string;
@@ -25,14 +28,20 @@ export class UpdateProgramDto {
   @ApiProperty({ required: false })
   zoomMeetingUrl?: string;
 
+  @ApiProperty({ required: false })
+  googleMeetUrl?: string;
+
+  @ApiProperty({ required: false })
+  location?: string;
+
   @ApiProperty({ type: [String], required: false })
   cloudinary_id?: string[];
 
-  @ApiProperty({ default: 'pending', required: false })
+  @ApiProperty({ required: false })
   status?: string;
 
-  @ApiProperty({ enum: ['upcoming', 'past'], default: 'upcoming' })
-  type: string;
+  @ApiProperty({ required: false })
+  type?: string;
 
   @ApiProperty({ required: false })
   date?: Date;
@@ -51,4 +60,13 @@ export class UpdateProgramDto {
 
   @ApiProperty({ required: false })
   month?: number;
+
+  @ApiProperty({ type: [String], required: false })
+  bannerImages?: string[];
+
+  @ApiProperty({ type: [Object], required: false })
+  speakers?: { name: string; role: string; bio: string; imageUrl: string }[];
+
+  @ApiProperty({ type: [Object], required: false })
+  agenda?: { time: string; title: string; description: string }[];
 }

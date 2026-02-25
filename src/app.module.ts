@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
 import { redisStore } from 'cache-manager-redis-yet';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -22,11 +23,13 @@ import { OrganogramModule } from './organogram/organogram.module';
 import { EnquiryModule } from './enquiry/enquiry.module';
 import { HomeContentModule } from './home-content/home-content.module';
 import { SearchModule } from './search/search.module';
+import { ActiveBannerModule } from './active-banner/active-banner.module';
 import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
@@ -97,7 +100,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
     OrganogramModule,
     EnquiryModule,
     HomeContentModule,
-    SearchModule
+    SearchModule,
+    ActiveBannerModule
   ],
   controllers: [AppController],
   providers: [
