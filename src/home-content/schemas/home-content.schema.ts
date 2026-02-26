@@ -190,6 +190,9 @@ export class HomeContent {
 
   @Prop({ type: [NavItemSchema], default: [] })
   instituteNavItems: NavItem[];
+
+  @Prop({ required: false })
+  heroEstablishedText?: string;
 }
 
 export const HomeContentSchema = SchemaFactory.createForClass(HomeContent);

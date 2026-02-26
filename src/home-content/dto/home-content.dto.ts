@@ -293,6 +293,11 @@ export class CreateHomeContentDto {
   @ValidateNested({ each: true })
   @Type(() => NavItemDto)
   instituteNavItems?: NavItemDto[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  heroEstablishedText?: string;
 }
 
 export class UpdateHomeContentDto extends CreateHomeContentDto {}
