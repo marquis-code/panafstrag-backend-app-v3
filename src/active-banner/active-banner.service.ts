@@ -27,12 +27,24 @@ export class ActiveBannerService {
 
   async findActive(): Promise<ActiveBannerDocument | null> {
     const now = new Date();
-    return this.activeBannerModel
+    // 1. Try to find a banner that is active AND within the current date range
+    const currentBanner = await this.activeBannerModel
       .findOne({
         isActive: true,
         startDate: { $lte: now },
         endDate: { $gte: now },
       })
+      .populate('programId')
+      .exec();
+
+    if (currentBanner) {
+      return currentBanner;
+    }
+
+    // 2. Fallback: Find the most recently created banner that is marked as isActive: true, regardless of dates
+    return this.activeBannerModel
+      .findOne({ isActive: true })
+      .sort({ createdAt: -1 })
       .populate('programId')
       .exec();
   }
