@@ -42,38 +42,44 @@ import { RolesGuard } from './auth/guards/roles.guard';
         try {
           console.log(`[Cache] 🔌 Attempting to connect to Redis at ${redisHost}...`);
           
-          // Use a shorter timeout and more controlled reconnection for initialization
+          const redisPort = parseInt(configService.get<string>('REDIS_PORT') || '6379');
+          const redisPassword = configService.get<string>('REDIS_PASSWORD');
+
+          // Use a shorter timeout and more controlled reconnection
           const store = await redisStore({
             socket: {
               host: redisHost,
-              port: parseInt(configService.get<string>('REDIS_PORT') || '6379'),
+              port: redisPort,
               connectTimeout: 5000,
               reconnectStrategy: (retries) => {
-                if (retries > 2) {
-                  // Returning false stops the reconnection attempts
-                  return false;
-                }
-                return Math.min(retries * 100, 1000);
+                if (retries > 3) return false; // Stop after 3 retries
+                return Math.min(retries * 500, 2000);
               },
             },
-            password: configService.get<string>('REDIS_PASSWORD'),
+            password: redisPassword,
             ttl: parseInt(configService.get<string>('CACHE_TTL') || '3600'),
           });
 
-          // Verify connectivity before returning the store
-          // If it fails here, it will be caught by the try-catch
-          await store.client.connect();
-          
-          // Add an error listener to prevent unhandled error events from crashing the process
+          // Add the error listener IMMEDIATELY before connecting
           store.client.on('error', (err) => {
             console.error('[Cache] ⚠️ Redis client error:', err.message);
           });
 
+          // Attempt connection with a timeout
+          await Promise.race([
+            store.client.connect(),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Redis connection timeout')), 6000))
+          ]);
+          
           console.log('[Cache] ✅ Redis store connected successfully.');
           return { store };
-        } catch (error) {
-          console.error('[Cache] ❌ Redis connection failed. Falling back to in-memory store.');
-          return { ttl: 3600 };
+        } catch (error: any) {
+          console.error('[Cache] ❌ Redis connection failed:', error.message);
+          console.log('[Cache] ℹ️ Falling back to in-memory store.');
+          return { 
+            ttl: 3600,
+            // Returning empty object or undefined store triggers internal memory fallback in many versions
+          };
         }
       },
       inject: [ConfigService],

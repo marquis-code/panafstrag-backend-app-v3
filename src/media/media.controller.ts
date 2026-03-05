@@ -8,6 +8,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { MediaService } from './media.service';
+import { BadRequestException } from '@nestjs/common';
 
 @ApiTags('media')
 @Controller('media')
@@ -36,6 +37,16 @@ export class MediaController {
     @UploadedFile() file: Express.Multer.File,
     @Body('folder') folder?: string,
   ) {
-    return this.mediaService.uploadImage(file, folder);
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // 10MB limit
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      throw new BadRequestException('File is too heavy. Maximum size is 10MB.');
+    }
+
+    return this.mediaService.uploadFile(file, folder);
   }
 }

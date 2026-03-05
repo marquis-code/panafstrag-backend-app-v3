@@ -35,16 +35,15 @@ async function bootstrap() {
     }),
   );
 
-  // CORS — allow all origins with credentials
+  // CORS — allow all origins
   app.enableCors({
-    origin: true,
+    origin: (origin, callback) => callback(null, true),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
     allowedHeaders: '*',
     exposedHeaders: ['Content-Disposition'],
     preflightContinue: false,
     optionsSuccessStatus: 204,
-    maxAge: 86400,
   });
 
   // Global validation pipe
