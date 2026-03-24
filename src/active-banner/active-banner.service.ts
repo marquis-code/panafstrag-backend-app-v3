@@ -22,6 +22,7 @@ export class ActiveBannerService {
       .find()
       .populate('programId')
       .sort({ createdAt: -1 })
+      .lean() // Added .lean()
       .exec();
   }
 
@@ -35,6 +36,7 @@ export class ActiveBannerService {
         endDate: { $gte: now },
       })
       .populate('programId')
+      .lean() // Added .lean()
       .exec();
 
     if (currentBanner) {
@@ -46,11 +48,12 @@ export class ActiveBannerService {
       .findOne({ isActive: true })
       .sort({ createdAt: -1 })
       .populate('programId')
+      .lean() // Added .lean()
       .exec();
   }
 
   async findOne(id: string): Promise<ActiveBannerDocument> {
-    const banner = await this.activeBannerModel.findById(id).populate('programId').exec();
+    const banner = await this.activeBannerModel.findById(id).populate('programId').lean().exec();
     if (!banner) {
       throw new NotFoundException(`Active banner with ID ${id} not found`);
     }

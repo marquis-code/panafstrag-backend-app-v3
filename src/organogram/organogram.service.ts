@@ -28,13 +28,13 @@ export class OrganogramService {
     if (cachedData) {
       return cachedData;
     }
-    const data = await this.organogramModel.find().sort({ level: 1, order: 1 }).exec();
+    const data = await this.organogramModel.find().sort({ level: 1, order: 1 }).lean().exec();
     await this.cacheManager.set(this.CACHE_KEY, data);
     return data;
   }
 
   async findOne(id: string): Promise<OrganogramNodeDocument> {
-    const doc = await this.organogramModel.findById(id).exec();
+    const doc = await this.organogramModel.findById(id).lean().exec();
     if (!doc) {
       throw new NotFoundException(`Organogram node with ID ${id} not found`);
     }

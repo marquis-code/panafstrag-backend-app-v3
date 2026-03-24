@@ -38,13 +38,13 @@ export class ArchiveService {
     if (filters?.year) query.year = filters.year;
     if (filters?.month) query.month = filters.month;
 
-    const data = await this.archiveModel.find(query).sort({ date: -1, createdAt: -1 }).exec();
+    const data = await this.archiveModel.find(query).sort({ date: -1, createdAt: -1 }).lean().exec();
     await this.cacheManager.set(cacheKey, data);
     return data;
   }
 
   async findOne(id: string): Promise<ArchiveDocument> {
-    const archive = await this.archiveModel.findById(id).exec();
+    const archive = await this.archiveModel.findById(id).lean().exec();
     if (!archive) {
       throw new NotFoundException(`Archive entry with ID ${id} not found`);
     }

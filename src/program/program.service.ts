@@ -32,7 +32,7 @@ export class ProgramService {
     // Find programs older than 1 month
     const oldPrograms = await this.programModel.find({
       date: { $lt: oneMonthAgo },
-    }).exec();
+    }).lean().exec();
 
     if (oldPrograms.length === 0) {
       console.log('No programs to archive.');
@@ -84,13 +84,13 @@ export class ProgramService {
       filter.date = { $gte: oneMonthAgo };
     }
 
-    const programs = await this.programModel.find(filter).sort({ date: -1 }).exec();
+    const programs = await this.programModel.find(filter).sort({ date: -1 }).lean().exec();
     await this.cacheManager.set(cacheKey, programs);
     return programs;
   }
 
   async findOne(id: string): Promise<ProgramDocument> {
-    const program = await this.programModel.findById(id).exec();
+    const program = await this.programModel.findById(id).lean().exec();
     if (!program) {
       throw new NotFoundException(`Program with ID ${id} not found`);
     }

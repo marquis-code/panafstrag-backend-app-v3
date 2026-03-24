@@ -28,13 +28,13 @@ export class LanguageGroupService {
     if (cachedData) {
       return cachedData;
     }
-    const data = await this.languageGroupModel.find().exec();
+    const data = await this.languageGroupModel.find().lean().exec();
     await this.cacheManager.set(this.CACHE_KEY, data);
     return data;
   }
 
   async findOne(id: string): Promise<LanguageGroupDocument> {
-    const doc = await this.languageGroupModel.findById(id).exec();
+    const doc = await this.languageGroupModel.findById(id).lean().exec();
     if (!doc) {
       throw new NotFoundException(`Language Group with ID ${id} not found`);
     }

@@ -28,13 +28,13 @@ export class BoardService {
     if (cachedData) {
       return cachedData;
     }
-    const data = await this.boardModel.find().exec();
+    const data = await this.boardModel.find().lean().exec();
     await this.cacheManager.set(this.CACHE_KEY, data);
     return data;
   }
 
   async findOne(id: string): Promise<BoardDocument> {
-    const board = await this.boardModel.findById(id).exec();
+    const board = await this.boardModel.findById(id).lean().exec();
     if (!board) {
       throw new NotFoundException(`Board member with ID ${id} not found`);
     }

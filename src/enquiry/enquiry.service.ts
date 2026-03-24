@@ -16,11 +16,11 @@ export class EnquiryService {
   }
 
   async findAll(): Promise<EnquiryDocument[]> {
-    return this.enquiryModel.find().sort({ createdAt: -1 }).exec();
+    return this.enquiryModel.find().sort({ createdAt: -1 }).lean().exec();
   }
 
   async findOne(id: string): Promise<EnquiryDocument | null> {
-    return this.enquiryModel.findById(id).exec();
+    return this.enquiryModel.findById(id).lean().exec();
   }
 
   async updateStatus(id: string, status: string): Promise<EnquiryDocument | null> {

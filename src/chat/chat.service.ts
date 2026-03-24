@@ -24,7 +24,7 @@ export class ChatService {
     const createdMessage = new this.messageModel(data);
     const saved = await createdMessage.save();
     console.log('[ChatService] ✅ Saved ID:', saved._id);
-    return this.messageModel.findById(saved._id).populate('sender', 'name email').exec() as Promise<MessageDocument>;
+    return this.messageModel.findById(saved._id).populate('sender', 'name email').lean().exec() as Promise<MessageDocument>;
   }
 
   async findConversationById(conversationId: string): Promise<MessageDocument[]> {
@@ -64,11 +64,11 @@ export class ChatService {
   }
 
   async findAllBotConfigs(): Promise<BotConfigDocument[]> {
-    return this.botConfigModel.find().sort({ priority: -1, type: 1 }).exec();
+    return this.botConfigModel.find().sort({ priority: -1, type: 1 }).lean().exec();
   }
 
   async findActiveBotConfigs(): Promise<BotConfigDocument[]> {
-    return this.botConfigModel.find({ isActive: true }).sort({ priority: -1 }).exec();
+    return this.botConfigModel.find({ isActive: true }).sort({ priority: -1 }).lean().exec();
   }
 
   async seedDefaultBotConfigs(): Promise<void> {
@@ -215,7 +215,7 @@ export class ChatService {
     const skip = (page - 1) * limit;
 
     const [activities, total] = await Promise.all([
-      this.activityModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).exec(),
+      this.activityModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean().exec(),
       this.activityModel.countDocuments(query).exec(),
     ]);
 

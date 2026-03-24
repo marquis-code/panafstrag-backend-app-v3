@@ -28,13 +28,13 @@ export class FocusAreaService {
     if (cachedData) {
       return cachedData;
     }
-    const data = await this.focusAreaModel.find().exec();
+    const data = await this.focusAreaModel.find().lean().exec();
     await this.cacheManager.set(this.CACHE_KEY, data);
     return data;
   }
 
   async findOne(id: string): Promise<FocusAreaDocument> {
-    const doc = await this.focusAreaModel.findById(id).exec();
+    const doc = await this.focusAreaModel.findById(id).lean().exec();
     if (!doc) {
       throw new NotFoundException(`Focus Area with ID ${id} not found`);
     }

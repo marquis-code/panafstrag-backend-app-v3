@@ -17,11 +17,11 @@ export class ObjectiveService {
   }
 
   async findAll(): Promise<ObjectiveDocument[]> {
-    return this.objectiveModel.find().exec();
+    return this.objectiveModel.find().lean().exec();
   }
 
   async findOne(id: string): Promise<ObjectiveDocument> {
-    const objective = await this.objectiveModel.findById(id).exec();
+    const objective = await this.objectiveModel.findById(id).lean().exec();
     if (!objective) {
       throw new NotFoundException(`Objective with ID ${id} not found`);
     }

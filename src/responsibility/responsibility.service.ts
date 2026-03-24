@@ -17,11 +17,11 @@ export class ResponsibilityService {
   }
 
   async findAll(): Promise<ResponsibilityDocument[]> {
-    return this.responsibilityModel.find().exec();
+    return this.responsibilityModel.find().lean().exec();
   }
 
   async findOne(id: string): Promise<ResponsibilityDocument> {
-    const responsibility = await this.responsibilityModel.findById(id).exec();
+    const responsibility = await this.responsibilityModel.findById(id).lean().exec();
     if (!responsibility) {
       throw new NotFoundException(`Responsibility with ID ${id} not found`);
     }

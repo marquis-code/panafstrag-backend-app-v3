@@ -11,7 +11,7 @@ export class HomeContentService {
   ) {}
 
   async getHomeContent(): Promise<HomeContent> {
-    const content = await this.homeContentModel.findOne().exec();
+    const content = await this.homeContentModel.findOne().lean().exec();
     if (!content) {
       const seedData = {
         carousels: [
@@ -61,7 +61,7 @@ export class HomeContentService {
   }
 
   async updateHomeContent(updateDto: CreateHomeContentDto): Promise<HomeContent> {
-    let content = await this.homeContentModel.findOne().exec();
+    let content = await this.homeContentModel.findOne().lean().exec();
     if (!content) {
       content = new this.homeContentModel(updateDto);
       return await content.save();

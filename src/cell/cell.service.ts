@@ -28,13 +28,13 @@ export class CellService {
     if (cachedData) {
       return cachedData;
     }
-    const data = await this.cellModel.find().sort({ order: 1, createdAt: 1 }).exec();
+    const data = await this.cellModel.find().sort({ order: 1, createdAt: 1 }).lean().exec();
     await this.cacheManager.set(this.CACHE_KEY, data);
     return data;
   }
 
   async findOne(id: string): Promise<CellDocument> {
-    const cell = await this.cellModel.findById(id).exec();
+    const cell = await this.cellModel.findById(id).lean().exec();
     if (!cell) {
       throw new NotFoundException(`Cell with ID ${id} not found`);
     }
