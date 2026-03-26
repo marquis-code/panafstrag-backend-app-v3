@@ -42,6 +42,12 @@ export class Archive {
   @Prop()
   endDate?: string;
 
+  @Prop()
+  startTime?: string;
+
+  @Prop()
+  endTime?: string;
+
   @Prop([String])
   uploadedDocumentFiles?: string[];
 
