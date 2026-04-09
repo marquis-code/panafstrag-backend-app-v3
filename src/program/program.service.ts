@@ -42,16 +42,22 @@ export class ProgramService {
     console.log(`Archiving ${oldPrograms.length} programs...`);
 
     for (const program of oldPrograms) {
-      const programObj = program.toObject();
       const archiveData = {
-        ...programObj,
-        _id: undefined, // Let mongoose generate a new ID for the archive
+        ...program,
         type: 'programme',
-        // Preserve original ID in some way if needed, or just let it be a new entry
       };
 
-      await new this.archiveModel(archiveData).save();
-      await this.programModel.findByIdAndDelete(program._id).exec();
+      try {
+        await new this.archiveModel(archiveData).save();
+        await this.programModel.findByIdAndDelete(program._id).exec();
+      } catch (error) {
+        if (error.code === 11000) {
+          // Already archived, safe to delete from main collection
+          await this.programModel.findByIdAndDelete(program._id).exec();
+        } else {
+          console.error(`Failed to archive program ${program._id}:`, error);
+        }
+      }
     }
 
     console.log('Archiving complete.');
@@ -65,9 +71,9 @@ export class ProgramService {
     return saved;
   }
 
-  async findAll(query?: { type?: string; year?: number; month?: number; includeAll?: boolean }): Promise<ProgramDocument[]> {
+  async findAll(query?: { type?: string; year?: number; month?: number; includeAll?: boolean }): Promise<(ProgramDocument | ArchiveDocument)[]> {
     const cacheKey = `${this.CACHE_KEY}_${JSON.stringify(query || {})}`;
-    const cachedPrograms = await this.cacheManager.get<ProgramDocument[]>(cacheKey);
+    const cachedPrograms = await this.cacheManager.get<(ProgramDocument | ArchiveDocument)[]>(cacheKey);
     if (cachedPrograms) {
       return cachedPrograms;
     }
@@ -78,23 +84,49 @@ export class ProgramService {
     if (query?.month) filter.month = Number(query.month);
 
     // By default, only return programs from the last month or upcoming
-    if (!query?.includeAll && !query?.year && !query?.month) {
+    if (!query?.includeAll && !query?.year && !query?.month && !query?.type) {
       const oneMonthAgo = new Date();
       oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
       filter.date = { $gte: oneMonthAgo };
     }
 
-    const programs = await this.programModel.find(filter).sort({ date: -1 }).lean().exec();
+    let programs = (await this.programModel.find(filter).sort({ date: -1 }).lean().exec()) as (ProgramDocument | ArchiveDocument)[];
+
+    // If we are looking for past programs or all programs, include the archive
+    if (query?.type === 'past' || query?.type === 'all' || query?.includeAll || query?.year || query?.month) {
+      const archiveFilter: any = { type: 'programme' };
+      if (query?.year) archiveFilter.year = Number(query.year);
+      if (query?.month) archiveFilter.month = Number(query.month);
+      
+      const archivedPrograms = await this.archiveModel.find(archiveFilter).sort({ date: -1 }).lean().exec();
+      
+      // Merge and sort
+      programs = [...programs, ...archivedPrograms] as (ProgramDocument | ArchiveDocument)[];
+      // Sort by date descending
+      programs.sort((a, b) => {
+        const dateA = a.date ? new Date(a.date).getTime() : 0;
+        const dateB = b.date ? new Date(b.date).getTime() : 0;
+        return dateB - dateA;
+      });
+    }
+
     await this.cacheManager.set(cacheKey, programs);
     return programs;
   }
 
-  async findOne(id: string): Promise<ProgramDocument> {
+  async findOne(id: string): Promise<ProgramDocument | ArchiveDocument> {
     const program = await this.programModel.findById(id).lean().exec();
-    if (!program) {
-      throw new NotFoundException(`Program with ID ${id} not found`);
+    if (program) {
+      return program as ProgramDocument;
     }
-    return program;
+
+    // Try finding in archives
+    const archivedProgram = await this.archiveModel.findById(id).lean().exec();
+    if (archivedProgram) {
+      return archivedProgram as ArchiveDocument;
+    }
+
+    throw new NotFoundException(`Program with ID ${id} not found`);
   }
 
   async update(id: string, updateProgramDto: UpdateProgramDto): Promise<ProgramDocument> {
