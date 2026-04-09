@@ -101,6 +101,9 @@ export class Archive {
     default: [],
   })
   agenda?: { time: string; title: string; description: string }[];
+  
+  @Prop({ type: [String], default: [] })
+  sectionOrder?: string[];
 }
 
 export const ArchiveSchema = SchemaFactory.createForClass(Archive);

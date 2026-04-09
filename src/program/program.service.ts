@@ -102,6 +102,16 @@ export class ProgramService {
       
       // Merge and sort
       programs = [...programs, ...archivedPrograms] as (ProgramDocument | ArchiveDocument)[];
+      
+      // De-duplicate by _id
+      const seen = new Set();
+      programs = programs.filter(p => {
+        const id = p._id.toString();
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+
       // Sort by date descending
       programs.sort((a, b) => {
         const dateA = a.date ? new Date(a.date).getTime() : 0;
