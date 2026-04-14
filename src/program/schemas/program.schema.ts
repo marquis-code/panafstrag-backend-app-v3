@@ -88,6 +88,9 @@ export class Program {
     default: [],
   })
   agenda: { time: string; title: string; description: string }[];
+
+  @Prop({ type: [String], default: ['documents', 'description', 'speakers', 'video', 'agenda', 'gallery'] })
+  sectionOrder: string[];
 }
 
 export const ProgramSchema = SchemaFactory.createForClass(Program);

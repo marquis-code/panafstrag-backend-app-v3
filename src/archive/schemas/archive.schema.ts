@@ -104,6 +104,9 @@ export class Archive {
   
   @Prop({ type: [String], default: [] })
   sectionOrder?: string[];
+
+  @Prop({ default: true })
+  isArchived: boolean;
 }
 
 export const ArchiveSchema = SchemaFactory.createForClass(Archive);

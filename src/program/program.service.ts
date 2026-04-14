@@ -45,6 +45,7 @@ export class ProgramService {
       const archiveData = {
         ...program,
         type: 'programme',
+        isArchived: true,
       };
 
       try {
