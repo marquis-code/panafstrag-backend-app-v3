@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsArray, IsEnum, IsDateString, IsNumber, ValidateNested, IsUrl } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsEnum, IsDateString, IsNumber, ValidateNested, IsUrl, ValidateIf } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateProgramDto {
@@ -75,6 +75,7 @@ export class CreateProgramDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @ValidateIf((o) => o.date !== '' && o.date !== null && o.date !== undefined)
   @IsDateString()
   date?: Date;
 
@@ -128,4 +129,10 @@ export class CreateProgramDto {
   @IsOptional()
   @IsArray()
   agenda?: { time: string; title: string; description: string }[];
+
+  @ApiProperty({ type: [String], required: false, description: 'Order of page sections' })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  sectionOrder?: string[];
 }
