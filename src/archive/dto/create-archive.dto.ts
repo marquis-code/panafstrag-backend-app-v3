@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsDateString, IsNumber, IsArray } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsDateString, IsNumber, IsArray, ValidateIf } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateArchiveDto {
@@ -18,6 +18,7 @@ export class CreateArchiveDto {
 
   @ApiProperty({ required: false })
   @IsOptional()
+  @ValidateIf((o) => o.date !== '' && o.date !== null && o.date !== undefined)
   @IsDateString()
   date?: Date;
 
@@ -127,4 +128,10 @@ export class CreateArchiveDto {
   @IsOptional()
   @IsArray()
   agenda?: any[];
+
+  @ApiProperty({ type: [String], required: false, description: 'Order of page sections' })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  sectionOrder?: string[];
 }
