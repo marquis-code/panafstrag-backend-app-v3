@@ -23,6 +23,12 @@ export class Program {
   @Prop()
   endDate: string;
 
+  @Prop()
+  startTime: string;
+
+  @Prop()
+  endTime: string;
+
   @Prop([String])
   uploadedDocumentFiles: string[];
 

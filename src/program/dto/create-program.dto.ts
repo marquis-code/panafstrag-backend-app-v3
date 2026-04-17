@@ -32,6 +32,16 @@ export class CreateProgramDto {
   @IsString()
   endDate?: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  startTime?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  endTime?: string;
+
   @ApiProperty({ type: [String], required: false })
   @IsOptional()
   @IsArray()
