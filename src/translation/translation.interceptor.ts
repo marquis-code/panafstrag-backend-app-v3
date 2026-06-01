@@ -27,7 +27,7 @@ export class TranslationInterceptor implements NestInterceptor {
     const cacheKey = `trans_${targetLang}_${url}`;
 
     // Check cache
-    let cachedResponse = null;
+    let cachedResponse: any = null;
     try {
       cachedResponse = await this.cacheManager.get(cacheKey);
     } catch (error) {
