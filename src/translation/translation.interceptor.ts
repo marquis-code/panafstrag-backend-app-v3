@@ -18,20 +18,23 @@ export class TranslationInterceptor implements NestInterceptor {
     const targetLang = request.headers['x-lang'];
     const method = request.method;
 
-    // Only translate GET requests and only if a specific supported language is requested
-    if (method !== 'GET' || !targetLang || targetLang === 'en') {
+    // Translate if a specific supported language is requested
+    if (!targetLang || targetLang === 'en') {
       return next.handle();
     }
 
     const url = request.originalUrl || request.url;
+    const isGet = method === 'GET';
     const cacheKey = `trans_${targetLang}_${url}`;
 
-    // Check cache
+    // Only Check cache for GET requests
     let cachedResponse: any = null;
-    try {
-      cachedResponse = await this.cacheManager.get(cacheKey);
-    } catch (error) {
-      console.error('Redis Cache GET error:', error);
+    if (isGet) {
+      try {
+        cachedResponse = await this.cacheManager.get(cacheKey);
+      } catch (error) {
+        console.error('Redis Cache GET error:', error);
+      }
     }
 
     if (cachedResponse) {
@@ -52,11 +55,13 @@ export class TranslationInterceptor implements NestInterceptor {
           console.error('Translation error in interceptor:', error);
         }
         
-        try {
-          // Cache for 1 hour (3600000 ms)
-          await this.cacheManager.set(cacheKey, translatedData, 3600000);
-        } catch (error) {
-          console.error('Redis Cache SET error:', error);
+        if (isGet) {
+          try {
+            // Cache GET requests for 1 hour (3600000 ms)
+            await this.cacheManager.set(cacheKey, translatedData, 3600000);
+          } catch (error) {
+            console.error('Redis Cache SET error:', error);
+          }
         }
         
         return translatedData;
