@@ -4,9 +4,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { redisStore } from 'cache-manager-redis-yet';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TranslationService } from './translation/translation.service';
+import { TranslationInterceptor } from './translation/translation.interceptor';
 import { AuthModule } from './auth/auth.module';
 import { BoardModule } from './board/board.module';
 import { CellModule } from './cell/cell.module';
@@ -112,6 +114,11 @@ import { RolesGuard } from './auth/guards/roles.guard';
   controllers: [AppController],
   providers: [
     AppService,
+    TranslationService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TranslationInterceptor,
+    },
   ],
 })
 export class AppModule {}

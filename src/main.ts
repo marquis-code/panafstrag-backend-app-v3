@@ -76,7 +76,10 @@ async function bootstrap() {
   });
 
   const port = configService.get<number>('PORT') ?? 3000;
-  await app.listen(port);
+  // await app.listen(port);
+  await app.listen(3000);
+console.log(`🚀 Application running on: ${await app.getUrl()}`);
+console.log(`🌐 CORS enabled for all origins`);
   console.log(`🚀 Application running on: ${await app.getUrl()}`);
   console.log(`🌐 CORS enabled for all origins`);
 }
