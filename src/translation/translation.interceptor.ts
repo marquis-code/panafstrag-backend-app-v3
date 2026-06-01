@@ -27,7 +27,13 @@ export class TranslationInterceptor implements NestInterceptor {
     const cacheKey = `trans_${targetLang}_${url}`;
 
     // Check cache
-    const cachedResponse = await this.cacheManager.get(cacheKey);
+    let cachedResponse = null;
+    try {
+      cachedResponse = await this.cacheManager.get(cacheKey);
+    } catch (error) {
+      console.error('Redis Cache GET error:', error);
+    }
+
     if (cachedResponse) {
       return new Observable((subscriber) => {
         subscriber.next(cachedResponse);
@@ -39,16 +45,21 @@ export class TranslationInterceptor implements NestInterceptor {
       map(async (data) => {
         if (!data) return data;
         
+        let translatedData = data;
         try {
-          const translatedData = await this.translationService.translateObject(data, targetLang);
-          
-          // Cache for 1 hour (3600000 ms)
-          await this.cacheManager.set(cacheKey, translatedData, 3600000);
-          return translatedData;
+          translatedData = await this.translationService.translateObject(data, targetLang);
         } catch (error) {
           console.error('Translation error in interceptor:', error);
-          return data; // Return original data on failure
         }
+        
+        try {
+          // Cache for 1 hour (3600000 ms)
+          await this.cacheManager.set(cacheKey, translatedData, 3600000);
+        } catch (error) {
+          console.error('Redis Cache SET error:', error);
+        }
+        
+        return translatedData;
       }),
     );
   }
