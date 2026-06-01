@@ -25,7 +25,6 @@ export class TranslationService {
 
   async translateText(text: string, targetLang: string): Promise<string> {
     if (!text || typeof text !== 'string') return text;
-    // Basic heuristics to avoid translating code-like strings
     if (text.length < 2) return text;
     if (text.startsWith('http') || text.startsWith('www') || text.includes('://')) return text;
 
@@ -35,24 +34,17 @@ export class TranslationService {
     try {
       const cached = await this.cacheManager.get<string>(cacheKey);
       if (cached) return cached;
-    } catch (e) {
-      this.logger.warn('Cache error on get', e);
-    }
+    } catch (e) {}
 
     try {
       const res = await translate(text, { to: targetLang });
       if (res && res.text) {
-        try {
-          // Cache individual string for a long time (e.g. 30 days) to make future translations instant
-          await this.cacheManager.set(cacheKey, res.text, 2592000000);
-        } catch (e) {
-          this.logger.warn('Cache error on set', e);
-        }
+        await this.cacheManager.set(cacheKey, res.text, 2592000000);
         return res.text;
       }
       return text;
     } catch (error) {
-      this.logger.error(`Translation failed for text: ${text.substring(0, 20)}...`, error);
+      this.logger.error(`Translation failed: ${text.substring(0, 20)}`, error);
       return text;
     }
   }
@@ -62,32 +54,104 @@ export class TranslationService {
     if (typeof obj === 'string') {
       return this.translateText(obj, targetLang);
     }
-    if (Array.isArray(obj)) {
-      return Promise.all(obj.map(item => this.translateObject(item, targetLang)));
-    }
-    if (typeof obj === 'object') {
-      // Handle MongoDB ObjectIDs or Dates
-      if (obj.constructor.name !== 'Object' && obj.constructor.name !== 'Array') return obj;
+
+    // Deep clone plain objects/arrays to avoid mutating original references
+    const cloneObject = (item: any): any => {
+      if (item === null || typeof item !== 'object') return item;
+      if (item.constructor.name !== 'Object' && item.constructor.name !== 'Array') return item;
+      if (Array.isArray(item)) return item.map(cloneObject);
+      const cloned: any = {};
+      for (const key of Object.keys(item)) {
+        cloned[key] = cloneObject(item[key]);
+      }
+      return cloned;
+    };
+
+    const clonedObj = cloneObject(obj);
+    const stringsToTranslate: { parent: any, key: string | number, text: string }[] = [];
+
+    const collectStrings = (current: any) => {
+      if (current === null || typeof current !== 'object') return;
+      if (current.constructor.name !== 'Object' && current.constructor.name !== 'Array') return;
+
+      const keys = Array.isArray(current) ? current.map((_, i) => i) : Object.keys(current);
       
-      const translatedObj = { ...obj };
-      const tasks: Promise<any>[] = [];
-      const keys: string[] = [];
+      for (const key of keys) {
+        const val = current[key];
+        if (typeof key === 'string' && this.excludeFields.includes(key)) continue;
 
-      // Concurrently process all keys rather than waiting sequentially
-      for (const key of Object.keys(translatedObj)) {
-        if (this.excludeFields.includes(key)) continue;
-        keys.push(key);
-        tasks.push(this.translateObject(translatedObj[key], targetLang));
+        if (typeof val === 'string') {
+          if (val.length >= 2 && !val.startsWith('http') && !val.startsWith('www') && !val.includes('://')) {
+            stringsToTranslate.push({ parent: current, key, text: val });
+          }
+        } else if (typeof val === 'object') {
+          collectStrings(val);
+        }
       }
+    };
 
-      const results = await Promise.all(tasks);
+    collectStrings(clonedObj);
 
-      for (let i = 0; i < keys.length; i++) {
-        translatedObj[keys[i]] = results[i];
+    if (stringsToTranslate.length === 0) return clonedObj;
+
+    const textsToFetch: { originalIndex: number, text: string, cacheKey: string }[] = [];
+    const finalTranslations: string[] = new Array(stringsToTranslate.length);
+
+    // 1. Check Cache
+    for (let i = 0; i < stringsToTranslate.length; i++) {
+      const text = stringsToTranslate[i].text;
+      const hash = this.hashString(text);
+      const cacheKey = `trans_str_${targetLang}_${hash}`;
+      
+      let cached: string | undefined;
+      try {
+        cached = await this.cacheManager.get<string>(cacheKey);
+      } catch (e) {}
+
+      if (cached) {
+        finalTranslations[i] = cached;
+      } else {
+        textsToFetch.push({ originalIndex: i, text, cacheKey });
       }
-
-      return translatedObj;
     }
-    return obj;
+
+    // 2. Batch Fetch Missing Texts
+    if (textsToFetch.length > 0) {
+      const texts = textsToFetch.map(t => t.text);
+      const BATCH_SIZE = 50;
+      
+      for (let i = 0; i < texts.length; i += BATCH_SIZE) {
+        const batch = texts.slice(i, i + BATCH_SIZE);
+        try {
+          const res = await translate(batch, { to: targetLang });
+          const resArray = Array.isArray(res) ? res : [res];
+          
+          for (let j = 0; j < resArray.length; j++) {
+            const mappedIndex = textsToFetch[i + j].originalIndex;
+            const translatedText = resArray[j].text;
+            finalTranslations[mappedIndex] = translatedText;
+            
+            // Save to cache
+            await this.cacheManager.set(textsToFetch[i + j].cacheKey, translatedText, 2592000000).catch(() => {});
+          }
+        } catch (error) {
+          this.logger.error(`Batch translation failed`, error);
+          // Fallback to original text on failure
+          for (let j = 0; j < batch.length; j++) {
+            const mappedIndex = textsToFetch[i + j].originalIndex;
+            finalTranslations[mappedIndex] = batch[j];
+          }
+        }
+      }
+    }
+
+    // 3. Apply Translations Back
+    for (let i = 0; i < stringsToTranslate.length; i++) {
+      if (finalTranslations[i]) {
+        stringsToTranslate[i].parent[stringsToTranslate[i].key] = finalTranslations[i];
+      }
+    }
+
+    return clonedObj;
   }
 }
