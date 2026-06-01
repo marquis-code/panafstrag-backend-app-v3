@@ -29,7 +29,7 @@ export class TranslationService {
     if (text.startsWith('http') || text.startsWith('www') || text.includes('://')) return text;
 
     const hash = this.hashString(text);
-    const cacheKey = `trans_str_${targetLang}_${hash}`;
+    const cacheKey = `trans_str_v2_${targetLang}_${hash}`;
 
     try {
       const cached = await this.cacheManager.get<string>(cacheKey);
@@ -101,7 +101,7 @@ export class TranslationService {
     for (let i = 0; i < stringsToTranslate.length; i++) {
       const text = stringsToTranslate[i].text;
       const hash = this.hashString(text);
-      const cacheKey = `trans_str_${targetLang}_${hash}`;
+      const cacheKey = `trans_str_v2_${targetLang}_${hash}`;
       
       let cached: string | undefined;
       try {
@@ -115,34 +115,24 @@ export class TranslationService {
       }
     }
 
-    // 2. Batch Fetch Missing Texts
+    // 2. Fetch Missing Texts Individually (to prevent one failure from failing all)
     if (textsToFetch.length > 0) {
-      const texts = textsToFetch.map(t => t.text);
-      const BATCH_SIZE = 50;
-      
-      for (let i = 0; i < texts.length; i += BATCH_SIZE) {
-        const batch = texts.slice(i, i + BATCH_SIZE);
+      const translationPromises = textsToFetch.map(async (item) => {
         try {
-          const res = await translate(batch, { to: targetLang });
-          const resArray = Array.isArray(res) ? res : [res];
-          
-          for (let j = 0; j < resArray.length; j++) {
-            const mappedIndex = textsToFetch[i + j].originalIndex;
-            const translatedText = resArray[j].text;
-            finalTranslations[mappedIndex] = translatedText;
-            
+          const res = await translate(item.text, { to: targetLang });
+          if (res && res.text) {
+            finalTranslations[item.originalIndex] = res.text;
             // Save to cache
-            await this.cacheManager.set(textsToFetch[i + j].cacheKey, translatedText, 2592000000).catch(() => {});
+            await this.cacheManager.set(item.cacheKey, res.text, 2592000000).catch(() => {});
+          } else {
+            finalTranslations[item.originalIndex] = item.text;
           }
         } catch (error) {
-          this.logger.error(`Batch translation failed`, error);
-          // Fallback to original text on failure
-          for (let j = 0; j < batch.length; j++) {
-            const mappedIndex = textsToFetch[i + j].originalIndex;
-            finalTranslations[mappedIndex] = batch[j];
-          }
+          this.logger.error(`Individual translation failed for text starting with: ${item.text.substring(0, 20)}`, error);
+          finalTranslations[item.originalIndex] = item.text;
         }
-      }
+      });
+      await Promise.all(translationPromises);
     }
 
     // 3. Apply Translations Back
