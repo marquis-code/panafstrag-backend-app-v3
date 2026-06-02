@@ -35,11 +35,10 @@ async function bootstrap() {
     }),
   );
 
-  // CORS — allow all origins
+  // CORS — aggressively allow all origins
   app.enableCors({
-    origin: (origin, callback) => callback(null, true),
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: '*',
     exposedHeaders: ['Content-Disposition'],
     preflightContinue: false,
