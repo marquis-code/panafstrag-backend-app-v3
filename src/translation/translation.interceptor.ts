@@ -25,7 +25,7 @@ export class TranslationInterceptor implements NestInterceptor {
 
     const url = request.originalUrl || request.url;
     const isGet = method === 'GET';
-    const cacheKey = `trans_v2_${targetLang}_${url}`;
+    const cacheKey = `trans_v3_${targetLang}_${url}`;
 
     // Only Check cache for GET requests
     let cachedResponse: any = null;

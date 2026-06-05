@@ -29,7 +29,7 @@ export class TranslationService {
     if (text.startsWith('http') || text.startsWith('www') || text.includes('://')) return text;
 
     const hash = this.hashString(text);
-    const cacheKey = `trans_str_v2_${targetLang}_${hash}`;
+    const cacheKey = `trans_str_v3_${targetLang}_${hash}`;
 
     try {
       const cached = await this.cacheManager.get<string>(cacheKey);
@@ -101,7 +101,7 @@ export class TranslationService {
     for (let i = 0; i < stringsToTranslate.length; i++) {
       const text = stringsToTranslate[i].text;
       const hash = this.hashString(text);
-      const cacheKey = `trans_str_v2_${targetLang}_${hash}`;
+      const cacheKey = `trans_str_v3_${targetLang}_${hash}`;
       
       let cached: string | undefined;
       try {
