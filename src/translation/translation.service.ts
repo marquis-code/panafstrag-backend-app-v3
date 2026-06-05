@@ -81,7 +81,7 @@ export class TranslationService {
         if (typeof key === 'string' && this.excludeFields.includes(key)) continue;
 
         if (typeof val === 'string') {
-          if (val.length >= 2 && !val.startsWith('http') && !val.startsWith('www') && !val.includes('://')) {
+          if (val.length >= 2 && !val.startsWith('http') && !val.startsWith('www') && !val.startsWith('https')) {
             stringsToTranslate.push({ parent: current, key, text: val });
           }
         } else if (typeof val === 'object') {
