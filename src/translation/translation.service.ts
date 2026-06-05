@@ -26,7 +26,7 @@ export class TranslationService {
   async translateText(text: string, targetLang: string): Promise<string> {
     if (!text || typeof text !== 'string') return text;
     if (text.length < 2) return text;
-    if (text.startsWith('http') || text.startsWith('www') || text.includes('://')) return text;
+    if ((text.startsWith('http') || text.startsWith('www') || text.includes('://')) && !text.includes(' ')) return text;
 
     const hash = this.hashString(text);
     const cacheKey = `trans_str_v3_${targetLang}_${hash}`;
@@ -81,7 +81,7 @@ export class TranslationService {
         if (typeof key === 'string' && this.excludeFields.includes(key)) continue;
 
         if (typeof val === 'string') {
-          if (val.length >= 2 && !val.startsWith('http') && !val.startsWith('www') && !val.startsWith('https')) {
+          if (val.length >= 2 && !((val.startsWith('http') || val.startsWith('www') || val.includes('://')) && !val.includes(' '))) {
             stringsToTranslate.push({ parent: current, key, text: val });
           }
         } else if (typeof val === 'object') {
