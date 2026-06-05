@@ -23,6 +23,62 @@ export class TranslationService {
     return crypto.createHash('md5').update(text).digest('hex');
   }
 
+  private async chunkAndTranslate(text: string, targetLang: string): Promise<string> {
+    if (text.length < 4000) {
+      try {
+        const res = await translate(text, { to: targetLang });
+        return res?.text || text;
+      } catch (e) {
+        this.logger.error(`Small chunk translation failed: ${text.substring(0, 20)}`, e);
+        return text;
+      }
+    }
+
+    let parts = text.split('</p>');
+    let delimiter = '</p>';
+    if (parts.length === 1) {
+      parts = text.split('\n');
+      delimiter = '\n';
+    }
+
+    const chunks: string[] = [];
+    let currentChunk = '';
+
+    for (let i = 0; i < parts.length; i++) {
+      const isLast = i === parts.length - 1;
+      const piece = parts[i] + (isLast ? '' : delimiter);
+      if (!piece) continue;
+
+      if (currentChunk.length + piece.length > 4000) {
+        if (currentChunk) chunks.push(currentChunk);
+        
+        if (piece.length > 4000) {
+            const subparts = piece.match(/.{1,3900}/g) || [];
+            chunks.push(...subparts);
+            currentChunk = '';
+        } else {
+            currentChunk = piece;
+        }
+      } else {
+        currentChunk += piece;
+      }
+    }
+    if (currentChunk) chunks.push(currentChunk);
+
+    let translatedText = '';
+    for (const chunk of chunks) {
+      try {
+        const res = await translate(chunk, { to: targetLang });
+        translatedText += (res?.text || chunk);
+      } catch (e) {
+        this.logger.error(`Large chunk translation failed`, e);
+        translatedText += chunk; // fallback to original chunk
+      }
+    }
+    
+    return translatedText;
+  }
+
   async translateText(text: string, targetLang: string): Promise<string> {
     if (!text || typeof text !== 'string') return text;
     if (text.length < 2) return text;
@@ -37,10 +93,10 @@ export class TranslationService {
     } catch (e) {}
 
     try {
-      const res = await translate(text, { to: targetLang });
-      if (res && res.text) {
-        await this.cacheManager.set(cacheKey, res.text, 2592000000);
-        return res.text;
+      const resText = await this.chunkAndTranslate(text, targetLang);
+      if (resText && resText !== text) {
+        await this.cacheManager.set(cacheKey, resText, 2592000000);
+        return resText;
       }
       return text;
     } catch (error) {
@@ -119,11 +175,11 @@ export class TranslationService {
     if (textsToFetch.length > 0) {
       const translationPromises = textsToFetch.map(async (item) => {
         try {
-          const res = await translate(item.text, { to: targetLang });
-          if (res && res.text) {
-            finalTranslations[item.originalIndex] = res.text;
+          const resText = await this.chunkAndTranslate(item.text, targetLang);
+          if (resText && resText !== item.text) {
+            finalTranslations[item.originalIndex] = resText;
             // Save to cache
-            await this.cacheManager.set(item.cacheKey, res.text, 2592000000).catch(() => {});
+            await this.cacheManager.set(item.cacheKey, resText, 2592000000).catch(() => {});
           } else {
             finalTranslations[item.originalIndex] = item.text;
           }
