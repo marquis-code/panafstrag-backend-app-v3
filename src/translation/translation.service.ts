@@ -16,7 +16,7 @@ export class TranslationService {
   private excludeFields = [
     '_id', 'id', '__v', 'createdAt', 'updatedAt', 'email', 'slug', 'url',
     'password', 'token', 'avatar', 'imageUrl', 'fileUrl', 'link', 'status',
-    'isActive', 'isDeleted', 'role', 'phone', 'ip', 'type'
+    'isActive', 'isDeleted', 'role', 'phone', 'ip', 'type', 'sectionOrder'
   ];
 
   private hashString(text: string): string {
